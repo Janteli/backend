@@ -18,5 +18,14 @@ app.use(express.static("public"))
 // cookie
 app.use(cookieParser())
 
+// routes
+import userRouter from './routes/user.routes.js'
+
+
+// routes declaration- route is seggregated middleware is required
+
+app.use("/api/v1/users", userRouter)
+
+
 
 export { app };

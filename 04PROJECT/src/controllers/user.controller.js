@@ -11,10 +11,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const {fullName, email, username, password} = req.body
 
-  // console.log("email:", email);
-  // console.log("username:", username);
-  // console.log("fullName:", fullName);
-  // console.log("password:", password);
+  console.log("email:", email);
+  console.log("username:", username);
+  console.log("fullName:", fullName);
+  console.log("password:", password);
 
   
 
@@ -40,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if(existedUser){
         throw new ApiError(409, "User with email or username already exists")
     }
-    console.log(req.files);
+    // console.log(req.files);
 
   //check for images, check for avatar
     // req.body holds data but middleware access more 
@@ -49,13 +49,15 @@ const registerUser = asyncHandler(async (req, res) => {
     // const coverImageLocalPath = req.files?.coverImage[0]?.path; works but creates problem not checked before
 
     let coverImageLocalPath;
-    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage <0) {
-      coverImageLocalPath = req.files.coverImage[0].path
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        coverImageLocalPath = req.files.coverImage[0].path
     }
 
+    // console.log("cover",coverImageLocalPath);
 
 
-    console.log("avatarFilePath:",avatarLocalPath);
+
+    // console.log("avatarFilePath:",avatarLocalPath);
 
     if(!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is required")
@@ -64,8 +66,10 @@ const registerUser = asyncHandler(async (req, res) => {
   // upload them to cloudinary - file, check avatar uploaded or not
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
-
+    console.log("coverImageLocalPath",coverImageLocalPath);
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+
+    console.log(avatar,"suraz", coverImage);
 
     if(!avatar) {
         throw new ApiError(400, "avatar file is required")
@@ -90,7 +94,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   )
-
+console.log(createdUser);
   
 
   //check for user creation

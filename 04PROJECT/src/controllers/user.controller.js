@@ -193,8 +193,13 @@ const logoutUser = asyncHandler(async (req, res) => {
     req.user._id,
     {
       // set gives access to what value to update
-      $set: {
-        refreshToken: undefined,
+      // $set: {
+      //   refreshToken: null, //this removes the field from document
+        
+      // },
+      $unset: {
+        refreshToken: null, //this removes the field from document
+        
       },
     },
     {
@@ -446,58 +451,63 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   )
 });
 
-const getWatchHistory = asyncHandler(async (req, res) => {
-  const user = await User.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(req.user._id) //mongoose id is not directly accessible
-      }
-    },
-    {
-      $lookup: {
-        from: "videos",
-        localField: "watchHistory",
-        foreignField: "_id",
-        as: "watchHistory",
-        pipeline: [
-          {
-            $lookup: {
-              from: "users",
-              localField: "owner",
-              foreignField: "_id",
-              as: "owner",
-              pipeline: [
-                {
-                  $project: {
-                    fullName: 1,
-                    username: 1,
-                    avatar: 1
-                  }
-                },
-                {
-                  $addFields: {
-                    owner: {
-                      $first: "$owner"
-                    }
-                  }
-                }
-              ]
+const getWatchHistory = asyncHandler(async(req, res) => {
+
+  console.log("History", username, channel)
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
             }
-          }
-        ]
-      }
-    }
-  ])
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields:{
+                            owner:{
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
 
-  return res
-  .status(200)
-  .json(
-    new ApiResponse(200, user[0].watchHistory,
-      "Watched History fetched Successfully"
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user[0].watchHistory,
+            "Watch history fetched successfully"
+        )
     )
-
-  )
 })
+
+
 
 export {
   registerUser,

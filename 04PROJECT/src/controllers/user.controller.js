@@ -30,10 +30,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const { fullName, email, username, password } = req.body;
 
-  console.log("email:", email);
-  console.log("username:", username);
-  console.log("fullName:", fullName);
-  console.log("password:", password);
+  // console.log("email:", email);
+  // console.log("username:", username);
+  // console.log("fullName:", fullName);
+  // console.log("password:", password);
 
   //validation - eg wether username, password is empty or not
 
@@ -63,6 +63,8 @@ const registerUser = asyncHandler(async (req, res) => {
   // req.body is given by express req.files is by multer
   const avatarLocalPath = req.files?.avatar[0]?.path;
   // const coverImageLocalPath = req.files?.coverImage[0]?.path; works but creates problem not checked before
+
+  console.log("avatarPath:", avatarLocalPath)
 
   let coverImageLocalPath;
   if (
@@ -383,9 +385,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
+  console.log("channelProfile",username);
 
   if (!username?.trim()) {
-    throw new ApiError(400, "");
+    throw new ApiError(400, "username is not passed");
   }
 
   const channel = await User.aggregate([
@@ -407,7 +410,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         from: "subscriptions", //in database all model are saved in lowercase and and plurals
         localField: "_id",
         foreignField: "subscriber",
-        as: "subscriberdTo",
+        as: "subscribedTo",
       },
     },
     {
@@ -434,12 +437,14 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         username: 1,
         subscribersCount: 1,
         channelsSubscribedToCount: 1,
+        isSubscribed:1,
         avatar: 1,
         coverImage: 1,
         email: 1,
       },
     },
   ]);
+  console.log("channeProfile", channel);
   if(!channel?.length) {
     throw new ApiError(404, "channel does not exists")
   }

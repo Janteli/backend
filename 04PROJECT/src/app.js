@@ -20,13 +20,19 @@ app.use(express.static("public"));
 // cookie
 app.use(cookieParser());
 
-// routes
+// routes declaration
+//*user routes
 import userRouter from "./routes/user.routes.js";
+import { publishAVideo } from "./controllers/video.controller.js";
 
 // routes declaration- route is seggregated middleware is required
 
 app.use("/api/v1/users", userRouter);
 
 // http://localhost:8000/api/v1/users/register
+
+app.use("/api/v1/videos", publishAVideo)
+
+
 
 export { app };

@@ -23,6 +23,7 @@ app.use(cookieParser());
 // routes declaration
 //*user routes
 import userRouter from "./routes/user.routes.js";
+import videoRouter from "./routes/video.routes.js"
 import { publishAVideo } from "./controllers/video.controller.js";
 
 // routes declaration- route is seggregated middleware is required
@@ -31,7 +32,7 @@ app.use("/api/v1/users", userRouter);
 
 // http://localhost:8000/api/v1/users/register
 
-app.use("/api/v1/videos", publishAVideo)
+app.use("/api/v1/videos", videoRouter)
 
 
 

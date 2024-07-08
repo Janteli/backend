@@ -1,9 +1,10 @@
 import { Router } from "express";
-import router from "./user.routes";
+// import router from "./user.routes";
+import {verifyJWT} from "../middlewares/auth.middleware.js"
 import { upload } from "../middlewares/multer.middleware";
 import { publishAVideo } from "../controllers/video.controller";
 
-const router= Router()
+const router = Router()
 
 router
 .route("/")
@@ -21,3 +22,5 @@ router
     ]),
     publishAVideo
 )
+
+export default router;

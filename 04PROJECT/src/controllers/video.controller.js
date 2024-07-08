@@ -194,9 +194,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
     // if there is anything in is public then also update that
     // TODO: get video, upload to cloudinary, create video
     try{
-        const { title, description } = req.body
+        const { title, description, thumbnail } = req.body
 
-        console.log("video:", title,description)
+
+        console.log("video:", title, description)
 
         if(!req.files.videoFile || !req.files.thumbnail){
             if(req.files.videoFile){
@@ -212,19 +213,20 @@ const publishAVideo = asyncHandler(async (req, res) => {
         const thumbnailLocalPath = req.files?.thumbnail[0].path;
 
         console.log("videoPath",videoFileLocalPath)
+        console.log("thumbPath", thumbnailLocalPath);
 
         const videoUpload = await uploadOnCloudinary(videoFileLocalPath)
 
         const thumbnailUpload = await uploadOnCloudinary(thumbnailLocalPath)
 
-        console.log("video upload",videoUpload, thumbnailUpload)
+         console.log("thubnail", thumbnailUpload, "AND", videoUpload)
 
-        if(!thumbnail || !videoFile) throw new ApiError(500, "Uploading error while uploading video or thumbnail")
+        if(!(thumbnail || videoFile)) throw new ApiError(500, "Uploading error while uploading video or thumbnail")
 
             const video = await Video.create({
-                videoFile: videoUpload.secure_url,
+                videoFile: videoUpload.url,
                 videoFilePublicId: videoFile.public_id,
-                thumbnail: thumbnailUpload.secure_url,
+                thumbnail: thumbnailUpload.url,
                 thumbnailPublicId:thumbnail.public_id,
                 title,
                 description,
@@ -232,7 +234,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
                 isPublic:req.body.isPublic == "false" ? false : true
             })
 
-            console.log("videoFile")
+            console.log("thumbnail", thumbnailUpload, "and", videoUpload)
 
             // await sendEmail(res, "pubilishedVideo", ownerEmail, video._id, video.title)
 

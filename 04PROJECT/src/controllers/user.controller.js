@@ -131,8 +131,8 @@ const loginUser = asyncHandler(async (req, res) => {
   // req.body-> data
   console.log("login-req", req.body);
   const { email, username, password } = req.body;
-  console.log("login-user", username);
-  console.log("login-email", email);
+  // console.log("login-user", username);
+  // console.log("login-email", email);
   // if emai or username is not input
   if (!username && !email) {
     throw new ApiError(400, "username or email is required");
